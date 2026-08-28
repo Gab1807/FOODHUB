@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodHub - Order Delicious Food Online</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="toast-container"></div>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="switchView('home')"><i class="fa-solid fa-utensils"></i> FoodHub</a>
+            <div class="nav-search">
+                <input type="text" id="global-search" placeholder="Search for burgers, pizza, chicken..." oninput="handleSearchInput(event)">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <nav class="nav-links">
+                <a href="#" onclick="switchView('home')" class="nav-link active" id="link-home">Home</a>
+                <a href="#" onclick="switchView('menu')" class="nav-link" id="link-menu">Menu</a>
+                <a href="#" onclick="switchView('tracking')" class="nav-link" id="link-tracking">Track Order</a>
+                <a href="#" onclick="switchView('history')" class="nav-link" id="link-history">Orders</a>
+                <div id="auth-nav-container">
+                    </div>
+                <button class="cart-btn" onclick="toggleCartModal(true)">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span id="cart-badge">0</span>
+                </button>
+            </nav>
+            <div class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="mobile-nav" id="mobile-nav">
+        <a href="#" onclick="switchView('home'); toggleMobileMenu();">Home</a>
+        <a href="#" onclick="switchView('menu'); toggleMobileMenu();">Menu</a>
+        <a href="#" onclick="switchView('tracking'); toggleMobileMenu();">Track Order</a>
+        <a href="#" onclick="switchView('history'); toggleMobileMenu();">Orders</a>
+        <div id="mobile-auth-container"></div>
+    </div>
+
+    <main class="main-content">
+
+        <section id="view-home" class="view active-view">
+            <div class="hero">
+                <div class="hero-content">
+                    <h1>Delicious Food, <br><span>Delivered To You</span></h1>
+                    <p>Order from your favorite local categories with blazing-fast delivery right to your doorstep in Dasmariñas.</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" onclick="switchView('menu')">Explore Menu <i class="fa-solid fa-arrow-right"></i></button>
+                        <button class="btn btn-secondary" onclick="switchView('tracking')">Track Active Order</button>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&auto=format&fit=crop&q=80" alt="Delicious Feast">
+                </div>
+            </div>
+
+            <div class="section-container">
+                <h2>Popular Categories</h2>
+                <div class="category-grid" id="home-category-grid">
+                    </div>
+            </div>
+
+            <div class="section-container">
+                <div class="section-header">
+                    <h2>Featured Items</h2>
+                    <button class="btn-text" onclick="switchView('menu')">View All <i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div class="food-grid" id="featured-food-grid">
+                    </div>
+            </div>
+        </section>
+
+        <section id="view-menu" class="view">
+            <div class="menu-header">
+                <h2>Our Full Menu</h2>
+                <p>Choose from our wide variety of freshly prepared meals</p>
+            </div>
+            
+            <div class="filter-bar" id="category-filter-bar">
+                </div>
+
+            <div class="food-grid" id="full-menu-grid">
+                </div>
+            <div id="menu-no-results" class="empty-state hidden">
+                <i class="fa-solid fa-face-frown"></i>
+                <h3>No food items found</h3>
+                <p>Try searching for something else or pick a different category.</p>
+            </div>
+        </section>
+
+        <section id="view-tracking" class="view">
+            <div class="tracking-container">
+                <h2>Live Order Tracker</h2>
+                <div id="active-tracker-content">
+                    </div>
+            </div>
+        </section>
+
+        <section id="view-history" class="view">
+            <div class="history-container">
+                <h2>Your Order History</h2>
+                <div id="order-history-list">
+                    </div>
+            </div>
+        </section>
+
+        <section id="view-admin" class="view">
+            <div class="admin-layout">
+                <aside class="admin-sidebar">
+                    <h3><i class="fa-solid fa-gauge-high"></i> Admin Panel</h3>
+                    <ul>
+                        <li><a href="#" class="admin-tab-link active" onclick="switchAdminTab('dashboard')"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                        <li><a href="#" class="admin-tab-link" onclick="switchAdminTab('foods')"><i class="fa-solid fa-burger"></i> Manage Foods</a></li>
+                        <li><a href="#" class="admin-tab-link" onclick="switchAdminTab('orders')"><i class="fa-solid fa-receipt"></i> Manage Orders</a></li>
+                    </ul>
+                </aside>
+                <div class="admin-content">
+                    <div id="admin-tab-dashboard" class="admin-tab-content active">
+                        <h2>Dashboard Overview</h2>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <i class="fa-solid fa-receipt"></i>
+                                <div>
+                                    <h4 id="admin-stat-orders">0</h4>
+                                    <p>Total Orders</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fa-solid fa-peso-sign"></i>
+                                <div>
+                                    <h4 id="admin-stat-sales">₱0.00</h4>
+                                    <p>Total Sales</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fa-solid fa-users"></i>
+                                <div>
+                                    <h4 id="admin-stat-customers">0</h4>
+                                    <p>Registered Users</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="admin-tab-foods" class="admin-tab-content">
+                        <div class="admin-header-row">
+                            <h2>Manage Food Items</h2>
+                            <button class="btn btn-primary" onclick="openFoodModal()"><i class="fa-solid fa-plus"></i> Add New Food</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Rating</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-food-tbody">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="admin-tab-orders" class="admin-tab-content">
+                        <h2>Customer Orders Management</h2>
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Customer</th>
+                                        <th>Total</th>
+                                        <th>Payment</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-order-tbody">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="modal-overlay" id="cart-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-cart-shopping"></i> Your Shopping Cart</h3>
+                <button class="close-btn" onclick="toggleCartModal(false)"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="cart-items-container">
+                </div>
+            <div class="modal-footer" id="cart-footer">
+                </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="checkout-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-cash-register"></i> Secure Checkout</h3>
+                <button class="close-btn" onclick="toggleCheckoutModal(false)"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="checkout-form" onsubmit="handlePlaceOrder(event)">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="checkout-name" required placeholder="James Tanael">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <input type="tel" id="checkout-contact" required placeholder="09123456789">
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Address</label>
+                        <textarea id="checkout-address" required placeholder="Block 1 Lot 2, Brgy. Salitran, Dasmariñas"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Method</label>
+                        <select id="checkout-payment">
+                            <option value="Cash on Delivery">Cash on Delivery (COD)</option>
+                            <option value="GCash">GCash</option>
+                            <option value="Credit/Debit Card">Credit/Debit Card</option>
+                        </select>
+                    </div>
+                    <div class="checkout-summary-box">
+                        <p>Items Subtotal: <span id="summary-subtotal">₱0.00</span></p>
+                        <p>Delivery Fee: <span>₱50.00</span></p>
+                        <h4>Total Amount: <span id="summary-total">₱0.00</span></h4>
+                    </div>
+                    <button type="submit" class="btn btn-primary full-width">Place Order Now</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal-container auth-modal-box">
+            <div class="modal-header">
+                <h3 id="auth-modal-title">Customer Login</h3>
+                <button class="close-btn" onclick="toggleAuthModal(false)"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+                    <div class="form-group" id="auth-name-group" style="display: none;">
+                        <label>Full Name</label>
+                        <input type="text" id="auth-fullname" placeholder="James Tanael">
+                    </div>
+                    <div class="form-group">
+                        <label>Email / Username</label>
+                        <input type="text" id="auth-username" required placeholder="bossjames@email.com or admin">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="auth-password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn btn-primary full-width" id="auth-submit-btn">Login</button>
+                </form>
+                <div class="auth-switch-text" id="auth-switch-container">
+                    Don't have an account? <a href="#" onclick="toggleAuthMode(event)">Register here</a>
+                </div>
+                <div class="demo-credentials-note">
+                    <small><strong>Demo Admin Login:</strong> Username: <code>admin</code> | Password: <code>admin123</code></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="food-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="food-modal-title">Add Food Item</h3>
+                <button class="close-btn" onclick="toggleFoodModal(false)"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="food-form" onsubmit="handleSaveFood(event)">
+                    <input type="hidden" id="edit-food-id">
+                    <div class="form-group">
+                        <label>Food Name</label>
+                        <input type="text" id="food-input-name" required placeholder="Cheesy Bacon Burger">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="food-input-category" required>
+                            <option value="Burgers">Burgers</option>
+                            <option value="Pizza">Pizza</option>
+                            <option value="Chicken">Chicken</option>
+                            <option value="Pasta">Pasta</option>
+                            <option value="Rice Meals">Rice Meals</option>
+                            <option value="Desserts">Desserts</option>
+                            <option value="Drinks">Drinks</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Price (₱)</label>
+                        <input type="number" id="food-input-price" step="0.01" required placeholder="199.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Rating (1.0 - 5.0)</label>
+                        <input type="number" id="food-input-rating" step="0.1" min="1" max="5" required placeholder="4.8">
+                    </div>
+                    <div class="form-group">
+                        <label>Image URL</label>
+                        <input type="url" id="food-input-image" required placeholder="https://images.unsplash.com/...">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="food-input-desc" required placeholder="Juicy beef patty with melted cheese..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary full-width">Save Food Item</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <a href="#" class="logo"><i class="fa-solid fa-utensils"></i> FoodHub</a>
+                <p>Your ultimate online destination for quick, delicious, and reliable food delivery in Dasmariñas.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <a href="#" onclick="switchView('home')">Home</a>
+                <a href="#" onclick="switchView('menu')">Menu</a>
+                <a href="#" onclick="switchView('tracking')">Track Order</a>
+                <a href="#" onclick="switchView('history')">Order History</a>
+            </div>
+            <div class="footer-col">
+                <h4>Categories</h4>
+                <p>Burgers, Pizza, Chicken, Pasta, Rice Meals, Desserts, Drinks</p>
+            </div>
+            <div class="footer-col">
+                <h4>Frontend Demo</h4>
+                <p>Built with HTML5, CSS3, and JavaScript with localStorage persistence. No backend server required.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 FoodHub. Frontend-Only College Demo Project. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
